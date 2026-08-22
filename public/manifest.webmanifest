@@ -1,0 +1,17 @@
+{
+    "name": "Zaya Seller",
+    "short_name": "Zaya Seller",
+    "description": "Manage orders, AI assistant conversations, and notifications from your seller dashboard.",
+    "start_url": "/vendor/dashboard",
+    "scope": "/vendor/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#2f5d50",
+    "icons": [
+        {
+            "src": "/favicon.ico",
+            "sizes": "48x48",
+            "type": "image/x-icon"
+        }
+    ]
+}

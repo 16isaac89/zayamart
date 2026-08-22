@@ -171,6 +171,11 @@
           data-offer="{{ request('offer_type') ?? '' }}"
     ></span>
 
+    @include('aiassistant::widgets.chat', [
+        'sellerId' => $shopInfoArray['seller_id'],
+        'shopSlug' => $shopInfoArray['slug'],
+        'shopName' => $shopInfoArray['name'],
+    ])
 @endsection
 @push('script')
     <script src="{{ theme_asset(path: 'public/assets/front-end/js/product-list-filter.js') }}"></script>

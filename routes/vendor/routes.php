@@ -383,6 +383,26 @@ Route::group(['middleware' => ['maintenance_mode', 'actch:admin_panel']], functi
                     Route::get('expense-transaction-export-excel', 'expenseTransactionExportExcel')->name('expense-transaction-export-excel');
                 });
             });
+
+            Route::group(['prefix' => 'notifications', 'as' => 'notifications.'], function () {
+                Route::controller(\App\Http\Controllers\Vendor\VendorNotificationController::class)->group(function () {
+                    Route::get('/', 'index')->name('index');
+                    Route::get('recent', 'recent')->name('recent');
+                    Route::post('{notification}/read', 'markRead')->name('read');
+                    Route::post('mark-all-read', 'markAllRead')->name('mark-all-read');
+                });
+                Route::controller(\App\Http\Controllers\Vendor\VendorNotificationSettingsController::class)->group(function () {
+                    Route::get('settings', 'edit')->name('settings');
+                    Route::post('settings', 'update')->name('settings.update');
+                });
+            });
+
+            Route::group(['prefix' => 'push-subscriptions', 'as' => 'push-subscriptions.'], function () {
+                Route::controller(\App\Http\Controllers\Vendor\PushSubscriptionController::class)->group(function () {
+                    Route::post('/', 'store')->name('store');
+                    Route::delete('/', 'destroy')->name('destroy');
+                });
+            });
         });
     });
 

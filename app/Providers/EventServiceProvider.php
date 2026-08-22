@@ -19,7 +19,10 @@ use App\Listeners\ChattingListener;
 use App\Events\AddFundToWalletEvent;
 use App\Events\EmailVerificationEvent;
 use App\Listeners\CashCollectListener;
+use App\Listeners\NotifyVendorOfOrderListener;
+use App\Listeners\NotifyVendorOfOrderStatusListener;
 use App\Listeners\OrderPlacedListener;
+use App\Listeners\WhatsAppOrderNotificationListener;
 use App\Listeners\OrderStatusListener;
 use App\Events\VendorRegistrationEvent;
 use App\Listeners\PasswordResetListener;
@@ -75,6 +78,12 @@ class EventServiceProvider extends ServiceProvider
         ],
         OrderPlacedEvent::class => [
             OrderPlacedListener::class,
+            // Fires for every order regardless of channel — see the AI
+            // Order Assistant architecture doc, Part II §8/§9.
+            WhatsAppOrderNotificationListener::class,
+            // In-app + PWA push "New Order" notification — see the
+            // notification architecture report.
+            NotifyVendorOfOrderListener::class,
         ],
         OrderEditEvent::class => [
             OrderEditListener::class,
@@ -87,6 +96,7 @@ class EventServiceProvider extends ServiceProvider
         ],
         OrderStatusEvent::class => [
             OrderStatusListener::class,
+            NotifyVendorOfOrderStatusListener::class,
         ],
         ChattingEvent::class => [
             ChattingListener::class,

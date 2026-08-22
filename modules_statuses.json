@@ -2,5 +2,6 @@
     "Blog": true,
     "Gateways": true,
     "TaxModule": true,
-    "AI": true
+    "AI": true,
+    "AIAssistant": true
 }

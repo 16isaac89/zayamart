@@ -48,4 +48,14 @@ return [
         'redirect' => env('TWITTER_SERVICE_CALLBACK'),
     ],
 
+    // Order-notification WhatsApp channel (AI Order Assistant architecture
+    // doc, Part II §8) — kept separate from the existing 'whatsapp'
+    // BusinessSetting row, which only ever stored a phone number for a
+    // floating chat-link widget, not send credentials.
+    'whatsapp_cloud' => [
+        'access_token' => env('WHATSAPP_CLOUD_ACCESS_TOKEN'),
+        'phone_number_id' => env('WHATSAPP_CLOUD_PHONE_NUMBER_ID'),
+        'api_version' => env('WHATSAPP_CLOUD_API_VERSION', 'v20.0'),
+    ],
+
 ];

@@ -54,6 +54,19 @@
                         </li>
                         @php($seller = auth('seller')->user())
                         @php($sellerId = $seller['id'])
+                        <li class="navbar-vertical-aside-has-menu {{ Request::is('vendor/notifications*')?'active' : ''}}">
+                            <a class="js-navbar-vertical-aside-menu-link nav-link"
+                               href="{{ route('vendor.notifications.index') }}" title="{{ translate('Notifications') }}">
+                                <i class="tio-notifications-outlined nav-icon"></i>
+                                <span class="navbar-vertical-aside-mini-mode-hidden-elements text-truncate">
+                                    {{ translate('Notifications') }}
+                                    @php($unreadNotificationCount = \App\Models\VendorNotification::where('seller_id', $sellerId)->whereNull('read_at')->count())
+                                    @if($unreadNotificationCount > 0)
+                                        <span class="badge badge-soft-danger badge-pill {{Session::get('direction') === "rtl" ? 'mr-1' : 'ml-1'}}">{{ $unreadNotificationCount }}</span>
+                                    @endif
+                                </span>
+                            </a>
+                        </li>
                         @php($sellerPOS=getWebConfig('seller_pos'))
                         @if ($sellerPOS == 1 && $seller['pos_status'] == 1)
                             <li class="navbar-vertical-aside-has-menu {{ Request::is('vendor/pos*')?'active' : ''}}">
@@ -65,6 +78,58 @@
                                 </a>
                             </li>
                         @endif
+
+                        <li class="navbar-vertical-aside-has-menu {{ Request::is('vendor/ai-assistant*')?'active' : ''}}">
+                            <a class="js-navbar-vertical-aside-menu-link nav-link nav-link-toggle" href="javascript:" title="{{ translate('AI_Assistant') }}">
+                                <i class="tio-android-bot nav-icon"></i>
+                                <span class="navbar-vertical-aside-mini-mode-hidden-elements text-truncate">
+                                    {{ translate('AI_Assistant') }}
+                                </span>
+                            </a>
+                            <ul class="js-navbar-vertical-aside-submenu nav nav-sub"
+                                style="display: {{ Request::is('vendor/ai-assistant*')?'block' : 'none'}}">
+                                <li class="nav-item {{ Request::is('vendor/ai-assistant') ? 'active' : ''}}">
+                                    <a class="nav-link" href="{{ route('vendor.ai-assistant.edit') }}">
+                                        <span class="tio-circle nav-indicator-icon"></span>
+                                        <span class="text-truncate">{{ translate('Settings') }}</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item {{ Request::is('vendor/ai-assistant/dashboard') ? 'active' : ''}}">
+                                    <a class="nav-link" href="{{ route('vendor.ai-assistant.dashboard') }}">
+                                        <span class="tio-circle nav-indicator-icon"></span>
+                                        <span class="text-truncate">{{ translate('Dashboard') }}</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item {{ Request::is('vendor/ai-assistant/provider*') ? 'active' : ''}}">
+                                    <a class="nav-link" href="{{ route('vendor.ai-assistant.provider.edit') }}">
+                                        <span class="tio-circle nav-indicator-icon"></span>
+                                        <span class="text-truncate">{{ translate('AI_Provider') }}</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item {{ Request::is('vendor/ai-assistant/knowledge*') ? 'active' : ''}}">
+                                    <a class="nav-link" href="{{ route('vendor.ai-assistant.knowledge.index') }}">
+                                        <span class="tio-circle nav-indicator-icon"></span>
+                                        <span class="text-truncate">{{ translate('Knowledge_Base') }}</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item {{ Request::is('vendor/ai-assistant/whatsapp*') ? 'active' : ''}}">
+                                    <a class="nav-link" href="{{ route('vendor.ai-assistant.whatsapp.edit') }}">
+                                        <span class="tio-circle nav-indicator-icon"></span>
+                                        <span class="text-truncate">{{ translate('WhatsApp') }}</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item {{ Request::is('vendor/ai-assistant/inbox*') ? 'active' : ''}}">
+                                    <a class="nav-link" href="{{ route('vendor.ai-assistant.inbox.index') }}">
+                                        <span class="tio-circle nav-indicator-icon"></span>
+                                        <span class="text-truncate">{{ translate('Inbox') }}</span>
+                                        @php($needsAttentionCount = \Modules\AIAssistant\app\Models\AIConversation::where('seller_id', $sellerId)->where('support_status', 'human_requested')->count())
+                                        @if($needsAttentionCount > 0)
+                                            <span class="badge badge-soft-danger badge-pill {{Session::get('direction') === "rtl" ? 'mr-1' : 'ml-1'}}">{{ $needsAttentionCount }}</span>
+                                        @endif
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
 
                         <li class="nav-item">
                             <small class="nav-subtitle">{{ translate('order_management') }}</small>

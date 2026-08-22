@@ -311,10 +311,10 @@ if (!function_exists('getProductPriceByType')) {
         }
 
         if ($type == 'discount_type') {
-            $discountType = $product['discount_type'];
+            $discountType = $product['discount_type'] ?? '';
             if ((isset($product['clearanceSale']) && $product['clearanceSale']) || isset($product['clearance_sale']) && $product['clearance_sale']) {
                 $clearanceSale = $product['clearanceSale'] ?? $product['clearance_sale'];
-                $discountType = $clearanceSale['discount_type'];
+                $discountType = $clearanceSale['discount_type'] ?? '';
             }
             return $discountType;
         }

@@ -1,0 +1,11 @@
+{
+    "name": "AIAssistant",
+    "alias": "aiassistant",
+    "description": "Provider-agnostic conversational AI shopping/checkout assistant, scoped per vendor.",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\AIAssistant\\app\\Providers\\AIAssistantServiceProvider"
+    ],
+    "files": []
+}

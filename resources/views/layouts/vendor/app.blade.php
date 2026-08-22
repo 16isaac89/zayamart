@@ -12,6 +12,11 @@
     <title>@yield('title')</title>
     <link rel="shortcut icon" href="{{ getStorageImages(path: getWebConfig(name: 'company_fav_icon'), type: 'backend-logo') }}">
 
+    {{-- PWA installability (brief §3/§4) — see public/manifest.webmanifest --}}
+    <link rel="manifest" href="{{ asset('manifest.webmanifest') }}">
+    <meta name="theme-color" content="#2f5d50">
+    <link rel="apple-touch-icon" href="{{ getStorageImages(path: getWebConfig(name: 'company_fav_icon'), type: 'backend-logo') }}">
+
     @include("layouts.vendor.partials._style-partials")
 
     {!! ToastMagic::styles() !!}
@@ -62,6 +67,8 @@
     @include("layouts.vendor.partials._translator-for-js")
     @include("layouts.vendor.partials._translated-message-container")
     @include("layouts.vendor.partials._script-partials")
+    @include("layouts.vendor.partials._firebase-init")
+    @include("layouts.vendor.partials._pwa-install-prompt")
 
     @stack("script")
     @stack("script_2")

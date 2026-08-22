@@ -2,10 +2,12 @@
 
 namespace App\Providers;
 
+use App\Contracts\WhatsAppProviderInterface;
 use App\Models\BusinessPage;
 use App\Models\BusinessSetting;
 use App\Models\LoginSetup;
 use App\Models\StockClearanceProduct;
+use App\Services\WhatsApp\MetaCloudWhatsAppProvider;
 use App\Traits\CacheManagerTrait;
 use App\Traits\FileManagerTrait;
 use App\Traits\UpdateClass;
@@ -57,6 +59,13 @@ class AppServiceProvider extends ServiceProvider
         $loader->alias('Helper', \App\Utils\Helpers::class);
         $loader->alias('Madzipper', \Madnest\Madzipper\Madzipper::class);
         $loader->alias('Excel', \Maatwebsite\Excel\Facades\Excel::class);
+
+        // The order system depends on WhatsAppProviderInterface only — see
+        // app/Contracts/WhatsAppProviderInterface.php and the AI Order
+        // Assistant architecture doc, Part II §8. Swapping providers later
+        // (Twilio, a different Cloud API account, ...) is a one-line change
+        // here, not a change anywhere WhatsAppService is used.
+        $this->app->bind(WhatsAppProviderInterface::class, MetaCloudWhatsAppProvider::class);
     }
 
     /**

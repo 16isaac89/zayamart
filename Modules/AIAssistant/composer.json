@@ -1,0 +1,24 @@
+{
+    "name": "nwidart/aiassistant",
+    "description": "Provider-agnostic conversational AI order assistant module.",
+    "authors": [],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {}
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\AIAssistant\\": "",
+            "Modules\\AIAssistant\\App\\": "app/",
+            "Modules\\AIAssistant\\Database\\Factories\\": "database/factories/",
+            "Modules\\AIAssistant\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\AIAssistant\\Tests\\": "tests/"
+        }
+    }
+}

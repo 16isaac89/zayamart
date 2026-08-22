@@ -42,6 +42,32 @@
                     </a>
                 </li>
             @endif
+            @if(Helpers::module_permission_check('ai_assistant_management'))
+                <li class="{{ Request::is('admin/ai-assistant*') ? 'sub-menu-opened' : ''}}">
+                    <a class="nav-link nav-link-toggle {{ Request::is('admin/ai-assistant*') ? 'active' : ''}}"
+                       href="javascript:" title="{{ translate('AI_Assistant') }}">
+                        <i class="fi fi-sr-robot"></i>
+                        <span class="aside-mini-hidden-element flex-grow-1 d-flex justify-content-between align-items-center">
+                            <span class="text-truncate max-w-180">{{ translate('AI_Assistant') }}</span>
+                            <i class="fi fi-sr-angle-down"></i>
+                        </span>
+                    </a>
+                    <ul class="aside-submenu navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link {{ Request::is('admin/ai-assistant/dashboard') ? 'active' : '' }}"
+                               href="{{ route('admin.ai-assistant.dashboard') }}" title="{{ translate('Dashboard') }}">
+                                <span class="flex-grow-1 text-truncate">{{ translate('Dashboard') }}</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ Request::is('admin/ai-assistant/providers*') ? 'active' : '' }}"
+                               href="{{ route('admin.ai-assistant.providers.index') }}" title="{{ translate('AI_Providers') }}">
+                                <span class="flex-grow-1 text-truncate">{{ translate('AI_Providers') }}</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            @endif
             @if(Helpers::module_permission_check('order_management'))
                 <li class="nav-item nav-item_title {{ Request::is('admin/orders*')?((Request::is('admin/orders/details/*') && request()->has('vendor-order-list')) ? '' : 'scroll-here'):''}}">
                     <small class="nav-subtitle" title="">{{ translate('order_management') }}</small>

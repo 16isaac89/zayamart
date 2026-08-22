@@ -409,7 +409,7 @@ class CartManager
         }
 
         $choices = [];
-        foreach (json_decode($product->choice_options) as $choice) {
+        foreach (json_decode($product->choice_options ?? '[]') ?? [] as $choice) {
             $choices[$choice->name] = $request[$choice->name];
             $variations[$choice->title] = $request[$choice->name];
             if ($string != null) {
@@ -573,7 +573,7 @@ class CartManager
             'in_cart_key' => $cart['id'],
             'cart' => $cart,
             'message' => translate('successfully_added') . '!',
-            'product_variant_type' => count(json_decode($product['variation'], true)) > 0 ? 'multi_variant' : 'single_variant',
+            'product_variant_type' => count(json_decode($product['variation'] ?? '[]', true) ?? []) > 0 ? 'multi_variant' : 'single_variant',
         ];
     }
 
@@ -667,7 +667,7 @@ class CartManager
             'in_cart_key' => $cart['id'],
             'cart' => $cart,
             'message' => translate('successfully_added') . '!',
-            'product_variant_type' => count(json_decode($product['variation'], true)) > 0 ? 'multi_variant' : 'single_variant',
+            'product_variant_type' => count(json_decode($product['variation'] ?? '[]', true) ?? []) > 0 ? 'multi_variant' : 'single_variant',
         ];
     }
 
@@ -737,7 +737,7 @@ class CartManager
         }
 
         $product = Product::find($cart['product_id']);
-        $count = count(json_decode($product->variation));
+        $count = count(json_decode($product->variation ?? '[]') ?? []);
         if ($count) {
             for ($i = 0; $i < $count; $i++) {
                 if (json_decode($product->variation)[$i]->type == $cart['variant']) {
@@ -793,7 +793,7 @@ class CartManager
 
         if ($shippingType == 'category_wise') {
             $categoryID = 0;;
-            foreach (json_decode($product['category_ids'] ?? '') as $ct) {
+            foreach (json_decode($product['category_ids'] ?? '[]') ?? [] as $ct) {
                 if ($ct->position == 1) {
                     $categoryID = $ct->id;
                 }
@@ -863,7 +863,7 @@ class CartManager
         foreach ($carts as $cart) {
             if ($cart->product) {
                 $product = $cart->product;
-                $count = count(json_decode($product->variation));
+                $count = count(json_decode($product->variation ?? '[]') ?? []);
                 if ($count) {
                     for ($i = 0; $i < $count; $i++) {
                         if (json_decode($product->variation)[$i]->type == $cart['variant']) {

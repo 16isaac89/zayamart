@@ -5786,13 +5786,13 @@ a {
 .__floating-btn {
     position: fixed;
     bottom: 73px;
-    right: 16px;
+    left: 16px;
     z-index: 9;
 }
 .floating-btn-grp {
     position: fixed;
     bottom: 34px;
-    right: 16px;
+    left: 16px;
     z-index: 999;
     display: flex;
     flex-direction: column;

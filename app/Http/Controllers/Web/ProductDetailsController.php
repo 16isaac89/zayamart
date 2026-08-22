@@ -86,7 +86,7 @@ class ProductDetailsController extends Controller
             );
 
             $firstVariationQuantity = $product['current_stock'];
-            if (count(json_decode($product['variation'], true)) > 0) {
+            if (count(json_decode($product['variation'] ?? '[]', true) ?? []) > 0) {
                 $firstVariationQuantity = json_decode($product['variation'], true)[0]['qty'];
             }
             $firstVariationQuantity = $product['product_type'] == 'physical' ? $firstVariationQuantity : 999;
@@ -202,7 +202,7 @@ class ProductDetailsController extends Controller
             );
 
             $firstVariationQuantity = $product['current_stock'];
-            if (count(json_decode($product['variation'], true)) > 0) {
+            if (count(json_decode($product['variation'] ?? '[]', true) ?? []) > 0) {
                 $firstVariationQuantity = json_decode($product['variation'], true)[0]['qty'];
             }
             $firstVariationQuantity = $product['product_type'] == 'physical' ? $firstVariationQuantity : 999;
@@ -309,7 +309,7 @@ class ProductDetailsController extends Controller
             );
 
             $firstVariationQuantity = $product['current_stock'];
-            if (count(json_decode($product['variation'], true)) > 0) {
+            if (count(json_decode($product['variation'] ?? '[]', true) ?? []) > 0) {
                 $firstVariationQuantity = json_decode($product['variation'], true)[0]['qty'];
             }
             $firstVariationQuantity = $product['product_type'] == 'physical' ? $firstVariationQuantity : 999;

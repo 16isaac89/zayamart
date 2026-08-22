@@ -10,7 +10,7 @@
             <input type="hidden" name="position" value="bottom">
             <div class="product-details-sticky-top">
                 <div class="border-bottom d-flex flex-column gap-3 mb-3 pb-3">
-                    @if (count(json_decode($productDetails->colors)) > 0)
+                    @if (!empty($productDetails->colors) && count(json_decode($productDetails->colors)) > 0)
                     <div class="position-relative">
                         <h6 class="fs-14 mb-2 pb-2">
                             {{ translate('color')}}
@@ -70,7 +70,7 @@
                         @endforeach
                     @endif
 
-                    @foreach (json_decode($productDetails->choice_options) as $key => $choice)
+                    @foreach ((json_decode($productDetails->choice_options) ?? []) as $key => $choice)
                     <div>
                         <h6 class="fs-14 mb-2 text-capitalize">
                             {{ $choice->title }}
@@ -113,7 +113,7 @@
                         <div class="d-flex flex-wrap align-items-center mb-2 pro">
                             <span class="fs-12 text-muted line--limit-1 text-capitalize product-generated-variation-text"></span>
                             <div class="d-none d-sm-flex flex-wrap align-items-center">
-                                <span class="{{ count(json_decode($productDetails->variation, true)) > 0 ? '__inline-25' : '' }} {{ count(json_decode($productDetails->variation, true)) > 0 ? 'mx-2' : '' }} mt-0"></span>
+                                <span class="{{ $productDetails->variation && count(json_decode($productDetails->variation, true)) > 0 ? '__inline-25' : '' }} {{ $productDetails->variation && count(json_decode($productDetails->variation, true)) > 0 ? 'mx-2' : '' }} mt-0"></span>
 
                                 <span class="fs-12">
                                     <span class="d-flex flex-wrap gap-8 align-items-center row-gap-0">

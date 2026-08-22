@@ -212,7 +212,7 @@
                                             <input type="hidden" name="id" value="{{ $product->id }}">
                                             <div
                                                 class="position-relative">
-                                                @if (count(json_decode($product->colors)) > 0)
+                                                @if (!empty($product->colors) && count(json_decode($product->colors)) > 0)
                                                     <div class="d-flex align-items-center gap-3 my-0">
                                                         <div class="product-description-label m-0 __color-9B9B9B fs-14">
                                                             {{ translate('color') }}
@@ -285,7 +285,7 @@
                                                 @endforeach
                                             @endif
 
-                                            @foreach (json_decode($product->choice_options) as $key => $choice)
+                                            @foreach ((json_decode($product->choice_options) ?? []) as $key => $choice)
                                                 <div class="row flex-start mx-0  gap-3 flex-nowrap">
                                                     <div
                                                         class="product-description-label fs-14 __color-9B9B9B text-capitalize flex-shrink-0">{{ $choice->title }}
@@ -1016,6 +1016,14 @@
     @endif
 
     @include('layouts.front-end.partials.modal._chatting',['seller'=>$product->seller, 'user_type'=>$product->added_by])
+
+    @if($product->added_by == 'seller' && $product->seller && $product->seller->shop)
+        @include('aiassistant::widgets.chat', [
+            'sellerId' => $product->seller->id,
+            'shopSlug' => $product->seller->shop->slug,
+            'shopName' => $product->seller->shop->name,
+        ])
+    @endif
 
     <span id="route-review-list-product" data-url="{{ route('review-list-product') }}"></span>
     <span id="products-details-page-data" data-id="{{ $product['id'] }}"></span>
