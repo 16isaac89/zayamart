@@ -197,6 +197,11 @@
                 const resultEl = btn.parentElement.querySelector('.js-test-result');
                 resultEl.textContent = '{{ translate('Testing') }}…';
 
+                function showError(message) {
+                    resultEl.textContent = '✕ ' + message;
+                    resultEl.className = 'js-test-result small text-danger';
+                }
+
                 fetch('{{ route('vendor.ai-assistant.provider.test-connection') }}', {
                     method: 'POST',
                     headers: {
@@ -205,12 +210,54 @@
                     },
                     body: JSON.stringify({ai_provider_id: providerId, model: modelInput.value}),
                 })
-                    .then(r => r.json())
-                    .then(data => {
+                    .then(function (r) {
+                        // A non-2xx response (419 expired session, 401/403,
+                        // a 500) still usually has a body, but it's not
+                        // necessarily the {success, message} JSON shape the
+                        // controller returns on success — read as text first
+                        // so a parse failure can be reported precisely
+                        // instead of collapsing into one generic message.
+                        return r.text().then(function (text) {
+                            return {ok: r.ok, status: r.status, text: text};
+                        });
+                    })
+                    .then(function (res) {
+                        if (res.status === 419) {
+                            showError('{{ translate('Your_session_expired_please_refresh_the_page_and_try_again') }}');
+                            return;
+                        }
+                        if (res.status === 401 || res.status === 403) {
+                            showError('{{ translate('You_are_not_authorized_please_log_in_again') }}');
+                            return;
+                        }
+
+                        let data;
+                        try {
+                            data = JSON.parse(res.text);
+                        } catch (parseError) {
+                            showError(
+                                '{{ translate('Unexpected_server_response') }} (HTTP ' + res.status + '): '
+                                + res.text.replace(/\s+/g, ' ').trim().slice(0, 200)
+                            );
+                            return;
+                        }
+
+                        if (!res.ok) {
+                            showError(data.message || ('{{ translate('Server_error') }} (HTTP ' + res.status + ')'));
+                            return;
+                        }
+
                         resultEl.textContent = (data.success ? '✓ ' : '✕ ') + data.message;
                         resultEl.className = 'js-test-result small ' + (data.success ? 'text-success' : 'text-danger');
                     })
-                    .catch(() => { resultEl.textContent = '{{ translate('Could_not_reach_server') }}'; });
+                    .catch(function (networkError) {
+                        // fetch() itself only rejects on a genuine network-level
+                        // failure (DNS, connection refused/reset, CORS, offline)
+                        // — never on an HTTP error status, so this is a real
+                        // "we never reached the server" case, worth saying so
+                        // explicitly rather than lumping it in with the above.
+                        showError('{{ translate('Network_error_check_your_connection_and_try_again') }}: ' + networkError.message);
+                    });
             });
         });
     </script>

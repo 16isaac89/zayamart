@@ -29,7 +29,7 @@ class VendorNotificationSettingsController extends Controller
     {
         $sellerId = auth('seller')->id();
         $events = array_keys(config('notifications.event_labels', []));
-        $channels = ['in_app', 'pwa', 'whatsapp'];
+        $channels = ['in_app', 'pwa', 'whatsapp', 'email'];
 
         $preferences = [];
         foreach ($events as $event) {

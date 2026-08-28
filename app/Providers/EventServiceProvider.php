@@ -23,6 +23,7 @@ use App\Listeners\NotifyVendorOfOrderListener;
 use App\Listeners\NotifyVendorOfOrderStatusListener;
 use App\Listeners\OrderPlacedListener;
 use App\Listeners\WhatsAppOrderNotificationListener;
+use App\Listeners\EmailOrderNotificationListener;
 use App\Listeners\OrderStatusListener;
 use App\Events\VendorRegistrationEvent;
 use App\Listeners\PasswordResetListener;
@@ -81,6 +82,8 @@ class EventServiceProvider extends ServiceProvider
             // Fires for every order regardless of channel — see the AI
             // Order Assistant architecture doc, Part II §8/§9.
             WhatsAppOrderNotificationListener::class,
+            // Free alternative to WhatsApp — same per-vendor opt-in/out gate.
+            EmailOrderNotificationListener::class,
             // In-app + PWA push "New Order" notification — see the
             // notification architecture report.
             NotifyVendorOfOrderListener::class,

@@ -32,13 +32,14 @@
                             <th class="text-center">{{ translate('In_App') }}</th>
                             <th class="text-center">{{ translate('PWA') }}</th>
                             <th class="text-center">{{ translate('WhatsApp') }}</th>
+                            <th class="text-center">{{ translate('Email') }}</th>
                         </tr>
                         </thead>
                         <tbody>
                         @foreach($events as $eventKey => $label)
                             <tr>
                                 <td>{{ translate($label) }}</td>
-                                @foreach(['in_app', 'pwa', 'whatsapp'] as $channel)
+                                @foreach(['in_app', 'pwa', 'whatsapp', 'email'] as $channel)
                                     @php($checked = data_get($settings->preferences, "{$eventKey}.{$channel}", data_get($defaults, "{$eventKey}.{$channel}", true)))
                                     <td class="text-center">
                                         <input type="checkbox" class="form-check-input" name="{{ $eventKey }}_{{ $channel }}" value="1" {{ $checked ? 'checked' : '' }}>
