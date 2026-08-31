@@ -6,9 +6,34 @@ use Illuminate\Support\Facades\Storage;
 
 trait  PdfGenerator
 {
+    /**
+     * mPDF's own default tempDir (vendor/mpdf/mpdf/tmp) is where it caches
+     * fonts/images — on most production deploys (vendor/ owned by a
+     * different user than the web server, read-only releases, etc.) that
+     * directory isn't writable, and mPDF's mkdir() there fails outright.
+     * storage/app is already required to be writable for the app to run
+     * at all, so pointing tempDir there instead sidesteps that class of
+     * permission error entirely.
+     */
+    private static function mpdfConfig(): array
+    {
+        $tempDir = storage_path('app/mpdf_tmp');
+        if (!is_dir($tempDir)) {
+            mkdir($tempDir, 0755, true);
+        }
+
+        return [
+            'default_font' => 'FreeSerif',
+            'mode' => 'utf-8',
+            'format' => [190, 250],
+            'autoLangToFont' => true,
+            'tempDir' => $tempDir,
+        ];
+    }
+
     public static function generatePdf($view, $filePrefix, $filePostfix, $pdfType = null, $requestFrom = 'admin'): void
     {
-        $mpdf = new \Mpdf\Mpdf(['default_font' => 'FreeSerif', 'mode' => 'utf-8', 'format' => [190, 250], 'autoLangToFont' => true]);
+        $mpdf = new \Mpdf\Mpdf(self::mpdfConfig());
         $mpdf->autoScriptToLang = true;
         $mpdf->autoLangToFont = true;
         if ($pdfType == 'invoice') {
@@ -23,7 +48,7 @@ trait  PdfGenerator
 
     public static function storePdf($view, $filePrefix, $filePostfix, $pdfType = null, $requestFrom = 'admin'): string
     {
-        $mpdf = new \Mpdf\Mpdf(['default_font' => 'FreeSerif', 'mode' => 'utf-8', 'format' => [190, 250], 'autoLangToFont' => true]);
+        $mpdf = new \Mpdf\Mpdf(self::mpdfConfig());
         $mpdf->autoScriptToLang = true;
         $mpdf->autoLangToFont = true;
         if ($pdfType == 'invoice') {

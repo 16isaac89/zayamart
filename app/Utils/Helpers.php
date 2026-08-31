@@ -654,7 +654,11 @@ class Helpers
 
     public static function gen_mpdf($view, $file_prefix, $file_postfix)
     {
-        $mpdf = new \Mpdf\Mpdf(['default_font' => 'FreeSerif', 'mode' => 'utf-8', 'format' => [190, 250]]);
+        $tempDir = storage_path('app/mpdf_tmp');
+        if (!is_dir($tempDir)) {
+            mkdir($tempDir, 0755, true);
+        }
+        $mpdf = new \Mpdf\Mpdf(['default_font' => 'FreeSerif', 'mode' => 'utf-8', 'format' => [190, 250], 'tempDir' => $tempDir]);
         $mpdf->autoScriptToLang = true;
         $mpdf->autoLangToFont = true;
 

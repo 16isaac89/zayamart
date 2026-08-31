@@ -451,7 +451,11 @@ class CustomerController extends Controller
         $order = Order::with('seller')->with('shipping')->where('id', $request['order_id'])->first();
         $invoiceSettings = json_decode(BusinessSetting::where(['type' => 'invoice_settings'])->first()?->value, true);
         $mpdf_view = \View::make(VIEW_FILE_NAMES['order_invoice'], compact('order', 'invoiceSettings'));
-        $mpdf = new \Mpdf\Mpdf(['default_font' => 'FreeSerif', 'mode' => 'utf-8', 'format' => [190, 250], 'autoLangToFont' => true]);
+        $mpdfTempDir = storage_path('app/mpdf_tmp');
+        if (!is_dir($mpdfTempDir)) {
+            mkdir($mpdfTempDir, 0755, true);
+        }
+        $mpdf = new \Mpdf\Mpdf(['default_font' => 'FreeSerif', 'mode' => 'utf-8', 'format' => [190, 250], 'autoLangToFont' => true, 'tempDir' => $mpdfTempDir]);
         $mpdf->autoScriptToLang = true;
         $mpdf->autoLangToFont = true;
         if ($pdfType = 'invoice') {
