@@ -206,4 +206,6 @@ return [
 	"A_team_member_will_join_this_conversation_shortly" => "A team member will join this conversation shortly",
 	"Real_Estate_Listings" => "Real Estate Listings",
 	"No_Image" => "No Image",
+	"New_real_estate_inquiry" => "New real estate inquiry",
+	"Log_in_to_your_vendor_panel_to_view_and_respond_to_this_inquiry" => "Log in to your vendor panel to view and respond to this inquiry",
 ];

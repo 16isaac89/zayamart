@@ -21,12 +21,12 @@ use Modules\AIAssistant\app\Tools\GetCartTool;
 use Modules\AIAssistant\app\Tools\GetOrderStatusTool;
 use Modules\AIAssistant\app\Tools\GetProductTool;
 use Modules\AIAssistant\app\Tools\GetProductVariantsTool;
-use Modules\AIAssistant\app\Tools\GetRealEstateInquiryLinkTool;
 use Modules\AIAssistant\app\Tools\GetRealEstateListingTool;
 use Modules\AIAssistant\app\Tools\RemoveFromCartTool;
 use Modules\AIAssistant\app\Tools\SearchKnowledgeBaseTool;
 use Modules\AIAssistant\app\Tools\SearchProductsTool;
 use Modules\AIAssistant\app\Tools\SearchRealEstateListingsTool;
+use Modules\AIAssistant\app\Tools\SubmitRealEstateInquiryTool;
 use Modules\AIAssistant\app\Tools\StartCheckoutTool;
 use Modules\AIAssistant\app\Tools\ToolRegistry;
 use Modules\AIAssistant\app\Tools\UpdateCartTool;
@@ -96,7 +96,7 @@ class AIAssistantServiceProvider extends ServiceProvider
                 $app->make(WhatsAppInquiryTool::class),
                 $app->make(SearchRealEstateListingsTool::class),
                 $app->make(GetRealEstateListingTool::class),
-                $app->make(GetRealEstateInquiryLinkTool::class),
+                $app->make(SubmitRealEstateInquiryTool::class),
             ]);
         });
 

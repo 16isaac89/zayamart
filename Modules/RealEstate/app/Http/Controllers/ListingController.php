@@ -3,14 +3,13 @@
 namespace Modules\RealEstate\app\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Jobs\DispatchVendorNotificationJob;
-use App\Models\VendorNotification;
 use App\Utils\Helpers;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Modules\RealEstate\app\Models\RealEstateInquiry;
 use Modules\RealEstate\app\Models\RealEstateListing;
+use Modules\RealEstate\app\Services\RealEstateInquiryNotifier;
 use Modules\RealEstate\app\Services\RealEstateWhatsAppLinkService;
 
 class ListingController extends Controller
@@ -53,7 +52,7 @@ class ListingController extends Controller
         return view('real-estate.show', compact('listing', 'otherListings', 'whatsappLink'));
     }
 
-    public function storeInquiry(Request $request, string $slug): RedirectResponse
+    public function storeInquiry(Request $request, string $slug, RealEstateInquiryNotifier $notifier): RedirectResponse
     {
         $listing = RealEstateListing::publiclyVisible()->where('slug', $slug)->firstOrFail();
 
@@ -73,18 +72,7 @@ class ListingController extends Controller
             'customer_id' => $customerId,
         ]);
 
-        // Queued — see DispatchVendorNotificationJob's own docblock for why
-        // this never runs synchronously inline with the customer's request.
-        DispatchVendorNotificationJob::dispatch(
-            $listing->seller_id,
-            VendorNotification::TYPE_REAL_ESTATE_INQUIRY,
-            'New real estate inquiry',
-            "{$data['guest_name']} is interested in \"{$listing->title}\".",
-            'real_estate_inquiry',
-            $inquiry->id,
-            route('vendor.real-estate.inquiries.show', $inquiry->id),
-            ['listing_id' => $listing->id],
-        );
+        $notifier->notify(collect([$inquiry->setRelation('listing', $listing)]));
 
         return back()->with('success', translate('Your_inquiry_has_been_sent'));
     }

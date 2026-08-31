@@ -20,7 +20,7 @@ return [
         'customer_needs_help' => ['in_app' => true, 'pwa' => true, 'whatsapp' => false, 'email' => false],
         'low_stock' => ['in_app' => true, 'pwa' => false, 'whatsapp' => false, 'email' => false],
         'system_alert' => ['in_app' => true, 'pwa' => false, 'whatsapp' => false, 'email' => false],
-        'real_estate_inquiry' => ['in_app' => true, 'pwa' => true, 'whatsapp' => false, 'email' => false],
+        'real_estate_inquiry' => ['in_app' => true, 'pwa' => true, 'whatsapp' => false, 'email' => true],
     ],
 
     'event_labels' => [
