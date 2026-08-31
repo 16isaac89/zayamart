@@ -6,12 +6,12 @@ use Illuminate\Support\Facades\Storage;
 
 trait  PdfGenerator
 {
-    public static function generatePdf($view, $filePrefix, $filePostfix, $pdfType = null, $requestFrom = 'admin'): string
+    public static function generatePdf($view, $filePrefix, $filePostfix, $pdfType = null, $requestFrom = 'admin'): void
     {
         $mpdf = new \Mpdf\Mpdf(['default_font' => 'FreeSerif', 'mode' => 'utf-8', 'format' => [190, 250], 'autoLangToFont' => true]);
         $mpdf->autoScriptToLang = true;
         $mpdf->autoLangToFont = true;
-        if ($pdfType = 'invoice') {
+        if ($pdfType == 'invoice') {
             $footerHtml = self::footerHtml($requestFrom);
             $mpdf->SetHTMLFooter($footerHtml);
         }
@@ -26,7 +26,7 @@ trait  PdfGenerator
         $mpdf = new \Mpdf\Mpdf(['default_font' => 'FreeSerif', 'mode' => 'utf-8', 'format' => [190, 250], 'autoLangToFont' => true]);
         $mpdf->autoScriptToLang = true;
         $mpdf->autoLangToFont = true;
-        if ($pdfType = 'invoice') {
+        if ($pdfType == 'invoice') {
             $footerHtml = self::footerHtml($requestFrom);
             $mpdf->SetHTMLFooter($footerHtml);
         }
