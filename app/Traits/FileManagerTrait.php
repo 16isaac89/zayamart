@@ -31,7 +31,14 @@ trait FileManagerTrait
                 $imageName = Carbon::now()->toDateString() . "-" . uniqid() . "." . $image->getClientOriginalExtension();
                 Storage::disk($storage)->put($dir . $imageName, file_get_contents($image));
             } else {
-                if (in_array(request()->ip(), ['127.0.0.1', '::1']) && !(imagetypes() & IMG_WEBP) || env('APP_DEBUG') && !(imagetypes() & IMG_WEBP)) {
+                // Not an environment/IP check — the PHP install itself
+                // either has GD/Imagick built with WebP support or it
+                // doesn't, on any server (local or production). Encoding to
+                // 'webp' without this guard throws
+                // Intervention\Image\Exception\NotSupportedException
+                // ("Webp format is not supported by PHP installation") on
+                // any host whose GD lacks it, regardless of debug mode.
+                if ($format === 'webp' && !(imagetypes() & IMG_WEBP)) {
                     $format = 'png';
                 }
                 $imageWebp = Image::make($image)->encode($format);

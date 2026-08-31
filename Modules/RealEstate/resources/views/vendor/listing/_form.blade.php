@@ -134,7 +134,9 @@
     @endif
     <div class="col-12">
         <label class="form-label">{{ translate('Add_Images') }}</label>
-        <input type="file" name="images[]" class="form-control" accept="image/*" multiple>
+        <input type="file" id="js-listing-images" name="images[]" class="form-control" accept="image/*" multiple>
+        <div class="form-text text-danger d-none" id="js-listing-images-error"></div>
+        <div class="d-flex flex-wrap gap-2 mt-2" id="js-listing-images-preview"></div>
     </div>
 </div>
 
@@ -153,5 +155,41 @@
         typeSelect.addEventListener('change', syncVisibility);
         purposeSelect.addEventListener('change', syncVisibility);
         syncVisibility();
+
+        // Client-side preview + a friendly error caught before the file
+        // ever leaves the browser — matches the server's own 'image' and
+        // 'max:4096' (KB) validation on images.* so a rejected file never
+        // has to make a round trip to find out it was rejected.
+        const MAX_KB = 4096;
+        const imagesInput = document.getElementById('js-listing-images');
+        const errorEl = document.getElementById('js-listing-images-error');
+        const previewEl = document.getElementById('js-listing-images-preview');
+
+        imagesInput.addEventListener('change', function () {
+            errorEl.classList.add('d-none');
+            errorEl.textContent = '';
+            previewEl.innerHTML = '';
+
+            const files = Array.from(imagesInput.files || []);
+            const invalid = files.find(function (file) {
+                return !file.type.startsWith('image/') || file.size > MAX_KB * 1024;
+            });
+
+            if (invalid) {
+                imagesInput.value = '';
+                errorEl.textContent = !invalid.type.startsWith('image/')
+                    ? '{{ translate('Please_choose_image_files_only') }}: ' + invalid.name
+                    : '{{ translate('Image_too_large_max') }} ' + MAX_KB / 1024 + 'MB: ' + invalid.name;
+                errorEl.classList.remove('d-none');
+                return;
+            }
+
+            files.forEach(function (file) {
+                const img = document.createElement('img');
+                img.style.cssText = 'width:90px;height:90px;object-fit:cover;border-radius:6px;';
+                img.src = URL.createObjectURL(file);
+                previewEl.appendChild(img);
+            });
+        });
     })();
 </script>

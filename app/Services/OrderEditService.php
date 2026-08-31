@@ -130,7 +130,7 @@ class OrderEditService
             $activeProduct = $productList?->firstWhere('id', $details['product_id']) ?? $product;
 
             $currentStock = $activeProduct ? max(0, $activeProduct['current_stock']) : $product['current_stock'];
-            $variations = is_array($activeProduct['variation']) ? $activeProduct['variation'] : json_decode($activeProduct['variation'], true);
+            $variations = is_array($activeProduct['variation']) ? $activeProduct['variation'] : json_decode($activeProduct['variation'] ?? '', true);
             $firstVariation = collect($variations)->first(function ($variation) use ($details) {
                 return $variation['type'] == $details['variant'];
             });
@@ -154,8 +154,8 @@ class OrderEditService
             $isQuantityEditable = (bool)($checkActiveProduct);
 
             if ($checkActiveProduct) {
-                $detailsProductVariation = json_decode($product['variation'], true);
-                $activeProductVariation = json_decode($checkActiveProduct['variation'] ?? '', true);
+                $detailsProductVariation = json_decode($product['variation'] ?? '', true) ?? [];
+                $activeProductVariation = json_decode($checkActiveProduct['variation'] ?? '', true) ?? [];
                 if (count($activeProductVariation) > 0) {
                     $isQuantityEditable = collect($activeProductVariation)->filter(function ($item) use ($details) {
                         return $item['type'] == $details['variant'];
@@ -231,7 +231,7 @@ class OrderEditService
         }
 
         if ($variation != null) {
-            $count = count(json_decode($product->variation));
+            $count = count(json_decode($product->variation) ?? []);
             for ($i = 0; $i < $count; $i++) {
                 if (json_decode($product->variation)[$i]->type == $variation) {
                     $unitPrice = json_decode($product->variation)[$i]->price;
@@ -463,7 +463,7 @@ class OrderEditService
             }
 
             if ($variation != null) {
-                $count = count(json_decode($product->variation));
+                $count = count(json_decode($product->variation) ?? []);
                 for ($i = 0; $i < $count; $i++) {
                     if (json_decode($product->variation)[$i]->type == $variation) {
                         $unitPrice = json_decode($product->variation)[$i]->price;
