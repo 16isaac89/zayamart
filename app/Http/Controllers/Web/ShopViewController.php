@@ -17,6 +17,7 @@ use App\Models\StockClearanceSetup;
 use App\Utils\CartManager;
 use App\Utils\CategoryManager;
 use App\Utils\ProductManager;
+use Modules\RealEstate\app\Models\RealEstateListing;
 use Brian2694\Toastr\Facades\Toastr;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
@@ -99,6 +100,9 @@ class ShopViewController extends Controller
         $products = $productListData->paginate(20)->appends($request->all());
         $stockClearanceProducts = StockClearanceProduct::active()->where(['shop_id'=> $shopId])->count();
         $stockClearanceSetup = StockClearanceSetup::where(['shop_id'=> $shopId])->first()?->is_active ?? 0;
+        $realEstateListings = $shop['author_type'] != 'admin'
+            ? RealEstateListing::publiclyVisible()->where('seller_id', $productUserID)->latest()->get()
+            : collect();
 
         if ($request->ajax()) {
             return response()->json([
@@ -117,6 +121,7 @@ class ShopViewController extends Controller
             'digitalProductAuthors' => $digitalProductAuthors,
             'stockClearanceProducts' => $stockClearanceProducts,
             'stockClearanceSetup' => $stockClearanceSetup,
+            'realEstateListings' => $realEstateListings,
             'data' => $data,
         ]);
     }

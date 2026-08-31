@@ -48,6 +48,20 @@
 
         @include('web-views.seller-view.shop-info-card', ['displayClass' => 'd-md-none border mt-3'])
 
+        @if($realEstateListings->isNotEmpty())
+            <div class="py-3 mb-2 mb-md-4 rtl __inline-35" dir="{{ session('direction') }}">
+                <h5 class="fs-16 font-weight-bold mb-3">{{ translate('Real_Estate_Listings') }}</h5>
+                <div class="row g-4">
+                    @foreach($realEstateListings as $listing)
+                        <div class="col-lg-3 col-md-4 col-sm-6">
+                            @include('real-estate._listing-card', ['listing' => $listing])
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+            <hr class="my-4">
+        @endif
+
         <form method="POST" action="{{ url()->current() }}" class="product-list-filter">
             <input hidden name="offer_type" value="{{ $data['offer_type'] }}">
             <input hidden name="data_from" value="{{ request('data_from') }}">
