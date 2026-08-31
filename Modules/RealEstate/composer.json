@@ -1,0 +1,24 @@
+{
+    "name": "nwidart/realestate",
+    "description": "Real estate listings module for vendors acting as brokers.",
+    "authors": [],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {}
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\RealEstate\\": "",
+            "Modules\\RealEstate\\App\\": "app/",
+            "Modules\\RealEstate\\Database\\Factories\\": "database/factories/",
+            "Modules\\RealEstate\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\RealEstate\\Tests\\": "tests/"
+        }
+    }
+}

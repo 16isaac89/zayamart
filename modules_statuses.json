@@ -3,5 +3,6 @@
     "Gateways": true,
     "TaxModule": true,
     "AI": true,
-    "AIAssistant": true
+    "AIAssistant": true,
+    "RealEstate": true
 }

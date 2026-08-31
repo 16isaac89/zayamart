@@ -20,6 +20,7 @@ class VendorNotification extends Model
     public const TYPE_CUSTOMER_NEEDS_HELP = 'customer_needs_help';
     public const TYPE_LOW_STOCK = 'low_stock';
     public const TYPE_SYSTEM_ALERT = 'system_alert';
+    public const TYPE_REAL_ESTATE_INQUIRY = 'real_estate_inquiry';
 
     protected $fillable = [
         'seller_id',

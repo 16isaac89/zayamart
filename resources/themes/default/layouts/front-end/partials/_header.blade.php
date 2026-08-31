@@ -504,6 +504,10 @@
                             </li>
                         @endif
 
+                        <li class="nav-item {{ request()->is('real-estate*') ? 'active' : '' }}">
+                            <a class="nav-link text-capitalize" href="{{ route('real-estate.index') }}">{{ translate('Real_Estate') }}</a>
+                        </li>
+
                         @if(auth('customer')->check())
                             <li class="nav-item d-md-none">
                                 <a href="{{route('user-account')}}" class="nav-link text-capitalize">

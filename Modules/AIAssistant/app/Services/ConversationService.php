@@ -50,6 +50,7 @@ class ConversationService
         'start_checkout' => AIChatTurnResult::TYPE_CHECKOUT,
         'create_order' => AIChatTurnResult::TYPE_CONFIRMATION,
         'get_order_status' => AIChatTurnResult::TYPE_ORDER_SUMMARY,
+        'get_whatsapp_inquiry_link' => AIChatTurnResult::TYPE_WHATSAPP_LINK,
     ];
 
     public function __construct(

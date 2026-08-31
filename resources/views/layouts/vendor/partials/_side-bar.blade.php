@@ -131,6 +131,40 @@
                             </ul>
                         </li>
 
+                        <li class="navbar-vertical-aside-has-menu {{ Request::is('vendor/real-estate*')?'active' : ''}}">
+                            <a class="js-navbar-vertical-aside-menu-link nav-link nav-link-toggle" href="javascript:" title="{{ translate('Real_Estate') }}">
+                                <i class="tio-home nav-icon"></i>
+                                <span class="navbar-vertical-aside-mini-mode-hidden-elements text-truncate">
+                                    {{ translate('Real_Estate') }}
+                                </span>
+                            </a>
+                            <ul class="js-navbar-vertical-aside-submenu nav nav-sub"
+                                style="display: {{ Request::is('vendor/real-estate*')?'block' : 'none'}}">
+                                <li class="nav-item {{ Request::is('vendor/real-estate') ? 'active' : ''}}">
+                                    <a class="nav-link" href="{{ route('vendor.real-estate.edit') }}">
+                                        <span class="tio-circle nav-indicator-icon"></span>
+                                        <span class="text-truncate">{{ translate('Broker_Profile') }}</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item {{ Request::is('vendor/real-estate/listings*') ? 'active' : ''}}">
+                                    <a class="nav-link" href="{{ route('vendor.real-estate.listings.index') }}">
+                                        <span class="tio-circle nav-indicator-icon"></span>
+                                        <span class="text-truncate">{{ translate('Listings') }}</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item {{ Request::is('vendor/real-estate/inquiries*') ? 'active' : ''}}">
+                                    <a class="nav-link" href="{{ route('vendor.real-estate.inquiries.index') }}">
+                                        <span class="tio-circle nav-indicator-icon"></span>
+                                        <span class="text-truncate">{{ translate('Inquiries') }}</span>
+                                        @php($newInquiryCount = \Modules\RealEstate\app\Models\RealEstateInquiry::where('seller_id', $sellerId)->where('status', 'new')->count())
+                                        @if($newInquiryCount > 0)
+                                            <span class="badge badge-soft-danger badge-pill {{Session::get('direction') === "rtl" ? 'mr-1' : 'ml-1'}}">{{ $newInquiryCount }}</span>
+                                        @endif
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
                         <li class="nav-item">
                             <small class="nav-subtitle">{{ translate('order_management') }}</small>
                             <small class="tio-more-horizontal nav-subtitle-replacer"></small>

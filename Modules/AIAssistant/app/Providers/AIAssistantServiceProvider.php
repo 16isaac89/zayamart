@@ -3,6 +3,7 @@
 namespace Modules\AIAssistant\app\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Modules\AIAssistant\app\Console\Commands\BackfillKnowledgeEmbeddingsCommand;
 use Modules\AIAssistant\app\Contracts\KnowledgeEmbeddingProviderInterface;
 use Modules\AIAssistant\app\Knowledge\Extractors\CsvTextExtractor;
 use Modules\AIAssistant\app\Knowledge\Extractors\DocxTextExtractor;
@@ -26,6 +27,7 @@ use Modules\AIAssistant\app\Tools\SearchProductsTool;
 use Modules\AIAssistant\app\Tools\StartCheckoutTool;
 use Modules\AIAssistant\app\Tools\ToolRegistry;
 use Modules\AIAssistant\app\Tools\UpdateCartTool;
+use Modules\AIAssistant\app\Tools\WhatsAppInquiryTool;
 use Modules\AIAssistant\AIProviders\AnthropicProvider;
 use Modules\AIAssistant\AIProviders\DeepSeekProvider;
 use Modules\AIAssistant\AIProviders\OpenAIProvider;
@@ -41,6 +43,10 @@ class AIAssistantServiceProvider extends ServiceProvider
         $this->registerConfig();
         $this->registerViews();
         $this->loadMigrationsFrom(module_path($this->moduleName, 'database/migrations'));
+
+        if ($this->app->runningInConsole()) {
+            $this->commands([BackfillKnowledgeEmbeddingsCommand::class]);
+        }
     }
 
     protected function registerViews(): void
@@ -84,12 +90,21 @@ class AIAssistantServiceProvider extends ServiceProvider
                 $app->make(CreateOrderTool::class),
                 $app->make(GetOrderStatusTool::class),
                 $app->make(SearchKnowledgeBaseTool::class),
+                $app->make(WhatsAppInquiryTool::class),
             ]);
         });
 
-        // Extension point for real vector embeddings (brief §15) — see
-        // NullEmbeddingProvider's docblock for why nothing else is bound
-        // here yet.
+        // Deliberately NOT OpenAIEmbeddingProvider yet: this platform runs
+        // vendors on DeepSeek, which has no embeddings endpoint, so real
+        // embeddings would mean a *second*, OpenAI-billed API call per
+        // knowledge-base chunk/query for every vendor on the platform — a
+        // real per-vendor cost with no budget allocated yet. Swap this
+        // binding to OpenAIEmbeddingProvider::class (and set OPENAI_API_KEY)
+        // when that's funded; KnowledgeRetrievalService and
+        // KnowledgeIngestionService need no further changes to pick it up,
+        // and app/Console/Commands/BackfillKnowledgeEmbeddingsCommand
+        // handles chunks stored before the switch. Until then, retrieval is
+        // MariaDB FULLTEXT/LIKE search only — see KnowledgeRetrievalService.
         $this->app->singleton(KnowledgeEmbeddingProviderInterface::class, NullEmbeddingProvider::class);
 
         $this->app->singleton(KnowledgeIngestionService::class, function ($app) {

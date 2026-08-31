@@ -20,6 +20,7 @@ return [
         'customer_needs_help' => ['in_app' => true, 'pwa' => true, 'whatsapp' => false, 'email' => false],
         'low_stock' => ['in_app' => true, 'pwa' => false, 'whatsapp' => false, 'email' => false],
         'system_alert' => ['in_app' => true, 'pwa' => false, 'whatsapp' => false, 'email' => false],
+        'real_estate_inquiry' => ['in_app' => true, 'pwa' => true, 'whatsapp' => false, 'email' => false],
     ],
 
     'event_labels' => [
@@ -29,5 +30,6 @@ return [
         'customer_needs_help' => 'Customer_Needs_Help',
         'low_stock' => 'Low_Stock',
         'system_alert' => 'System_Alerts',
+        'real_estate_inquiry' => 'Real_Estate_Inquiry',
     ],
 ];

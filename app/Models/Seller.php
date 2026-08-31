@@ -93,6 +93,11 @@ class Seller extends Authenticatable
         return $this->hasMany(Shop::class, 'seller_id');
     }
 
+    public function realEstateBroker(): HasOne
+    {
+        return $this->hasOne(\Modules\RealEstate\app\Models\RealEstateBroker::class, 'seller_id');
+    }
+
     public function orders(): HasMany
     {
         return $this->hasMany(Order::class, 'seller_id');

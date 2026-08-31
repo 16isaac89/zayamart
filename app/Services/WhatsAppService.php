@@ -7,6 +7,7 @@ use App\DataTransfer\WhatsAppCredentials;
 use App\DataTransfer\WhatsAppOrderMessage;
 use App\Models\Currency;
 use App\Models\Order;
+use App\Models\Seller;
 use App\Models\VendorWhatsAppSetting;
 use App\Models\WhatsAppNotification;
 
@@ -72,7 +73,17 @@ class WhatsAppService
 
     private function resolveVendorPhone(Order $order): ?string
     {
-        $seller = $order->seller()->with('shop')->first();
+        return $this->resolveVendorPhoneBySellerId($order->seller_id);
+    }
+
+    /**
+     * Public — also used by Modules\AIAssistant\app\Services\WhatsAppLinkService
+     * to build a "click to chat" wa.me link, which needs only this phone
+     * number and no Cloud API credentials at all.
+     */
+    public function resolveVendorPhoneBySellerId(int $sellerId): ?string
+    {
+        $seller = Seller::with('shop')->find($sellerId);
 
         return $seller?->shop?->contact ?: $seller?->phone;
     }

@@ -981,7 +981,7 @@ class OrderManager
         ];
     }
 
-    public static function addOrderDetailsData(int $orderId, object|array|null $vendorCart = []): void
+    public static function addOrderDetailsData(int $orderId, object|array|null $vendorCart = [], bool $deferStockDeduction = false): void
     {
         $orderDetailsRewardsData = [];
         $totalPrice = 0;
@@ -1032,6 +1032,15 @@ class OrderManager
                 'delivery_status' => 'pending',
                 'shipping_method_id' => null,
                 'payment_status' => 'unpaid',
+                // Left decreased (default) unless the caller explicitly defers
+                // it — e.g. AICheckoutService, for a chat-placed order the
+                // vendor hasn't fulfilled yet. Vendor/Order/OrderController::
+                // updateStatus() already deducts stock automatically once
+                // such an order is marked 'delivered', via the existing
+                // is_stock_decreased convention in
+                // OrderRepository::updateStockOnOrderStatusChange() — no
+                // separate deduction path is needed here.
+                'is_stock_decreased' => $deferStockDeduction ? 0 : 1,
                 'created_at' => now(),
                 'updated_at' => now()
             ];
@@ -1055,22 +1064,24 @@ class OrderManager
             $finalAmount = ($cartSingleItem['price'] - $productDiscount) * $cartSingleItem['quantity'];
             $totalPrice += $finalAmount;
 
-            if ($cartSingleItem['variant'] != null) {
-                $type = $cartSingleItem['variant'];
-                $variationData = [];
-                foreach (json_decode($product['variation'], true) as $var) {
-                    if ($type == $var['type']) {
-                        $var['qty'] -= $cartSingleItem['quantity'];
+            if (!$deferStockDeduction) {
+                if ($cartSingleItem['variant'] != null) {
+                    $type = $cartSingleItem['variant'];
+                    $variationData = [];
+                    foreach (json_decode($product['variation'], true) as $var) {
+                        if ($type == $var['type']) {
+                            $var['qty'] -= $cartSingleItem['quantity'];
+                        }
+                        $variationData[] = $var;
                     }
-                    $variationData[] = $var;
+                    Product::where(['id' => $product['id']])->update([
+                        'variation' => json_encode($variationData),
+                    ]);
                 }
                 Product::where(['id' => $product['id']])->update([
-                    'variation' => json_encode($variationData),
+                    'current_stock' => $product['current_stock'] - $cartSingleItem['quantity']
                 ]);
             }
-            Product::where(['id' => $product['id']])->update([
-                'current_stock' => $product['current_stock'] - $cartSingleItem['quantity']
-            ]);
             $orderDetailsId = DB::table('order_details')->insertGetId($orderDetails);
 
             foreach ($vendorCart['applied_tax_cart_list'] as $cartItem) {
@@ -1275,7 +1286,8 @@ class OrderManager
 
             OrderManager::addOrderDetailsData(
                 orderId: $order_id,
-                vendorCart: $vendorWiseCart
+                vendorCart: $vendorWiseCart,
+                deferStockDeduction: (bool)($data['defer_stock_deduction'] ?? false)
             );
 
             $order = Order::with('customer', 'seller.shop', 'details')->find($order_id);

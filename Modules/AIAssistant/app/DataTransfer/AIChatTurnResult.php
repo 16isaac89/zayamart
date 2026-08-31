@@ -20,6 +20,7 @@ final class AIChatTurnResult
     public const TYPE_CHECKOUT = 'checkout';
     public const TYPE_ORDER_SUMMARY = 'order_summary';
     public const TYPE_CONFIRMATION = 'confirmation';
+    public const TYPE_WHATSAPP_LINK = 'whatsapp_link';
     public const TYPE_HANDOFF = 'handoff';
     public const TYPE_ERROR = 'error';
 

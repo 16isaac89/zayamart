@@ -426,7 +426,14 @@ class OrderRepository implements OrderRepositoryInterface
                     }
                 }
             }
-        } else {
+        } elseif ($status === 'delivered') {
+            // Only relevant today for AI-chat orders (AICheckoutService),
+            // the sole path that creates order_details with
+            // is_stock_decreased = 0 — every other order already has stock
+            // decreased at creation, so this is a no-op for them. Gated to
+            // 'delivered' specifically (not "any non-cancelled status") so
+            // stock stays committed only once the vendor has actually
+            // fulfilled a chat-relayed order, not merely acknowledged it.
             foreach ($order['details'] as $detail) {
                 if ($detail['is_stock_decreased'] == 0) {
                     $product = $detail?->product;

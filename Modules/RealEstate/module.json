@@ -1,0 +1,11 @@
+{
+    "name": "RealEstate",
+    "alias": "realestate",
+    "description": "Real estate listings (houses and land, for sale or rent) for vendors acting as brokers.",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\RealEstate\\app\\Providers\\RealEstateServiceProvider"
+    ],
+    "files": []
+}

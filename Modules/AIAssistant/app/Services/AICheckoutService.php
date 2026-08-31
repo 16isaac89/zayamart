@@ -27,6 +27,10 @@ use Modules\AIAssistant\app\Models\AIConversation;
  */
 class AICheckoutService
 {
+    public function __construct(private readonly WhatsAppLinkService $whatsAppLinkService)
+    {
+    }
+
     public function confirmOrder(AIConversation $conversation, ToolExecutionContext $context, array $arguments): array
     {
         if ($conversation->hasConfirmedOrder()) {
@@ -119,6 +123,11 @@ class AICheckoutService
                 'coupon_code' => null,
                 'order_note' => $arguments['order_note'] ?? '',
                 'requestObj' => $context->request,
+                // Stock is committed once the vendor actually delivers this
+                // order (order_status -> 'delivered'), not the instant the
+                // chatbot creates it — see OrderManager::addOrderDetailsData()
+                // and OrderRepository::updateStockOnOrderStatusChange().
+                'defer_stock_deduction' => true,
             ]);
 
             $orders = Order::whereIn('id', $orderIds)->where('seller_id', $context->sellerId)->get();
@@ -142,12 +151,29 @@ class AICheckoutService
                 'confirmed_order_group_id' => $orderGroupId,
             ]);
 
+            $customerName = $this->resolveCustomerName($arguments, $addressId);
+
             return [
                 'order_ids' => $orders->pluck('id')->toArray(),
                 'order_group_id' => $orderGroupId,
                 'order_amount' => (float)$orders->sum('order_amount'),
+                // Bypasses the Meta Cloud API entirely (WhatsAppService) —
+                // the customer clicks this and sends it themselves from
+                // their own WhatsApp, so it needs no vendor-side setup.
+                'whatsapp_link' => $this->whatsAppLinkService->checkoutLink($orders, $customerName),
             ];
         });
+    }
+
+    private function resolveCustomerName(array $arguments, ?int $addressId): string
+    {
+        if (!empty($arguments['new_address']['contact_person_name'])) {
+            return $arguments['new_address']['contact_person_name'];
+        }
+
+        return $addressId
+            ? (ShippingAddress::find($addressId)?->contact_person_name ?? 'Customer')
+            : 'Customer';
     }
 
     private function resolveAddressId(array $arguments, int|string $ownerId, int $isGuestFlag): ?int
@@ -184,12 +210,14 @@ class AICheckoutService
     private function existingOrderSummary(AIConversation $conversation): array
     {
         $orders = Order::where('order_group_id', $conversation->confirmed_order_group_id)->get();
+        $address = (object)($orders->first()?->shipping_address_data ?? []);
 
         return [
             'order_ids' => $orders->pluck('id')->toArray(),
             'order_group_id' => $conversation->confirmed_order_group_id,
             'order_amount' => (float)$orders->sum('order_amount'),
             'already_confirmed' => true,
+            'whatsapp_link' => $this->whatsAppLinkService->checkoutLink($orders, $address->contact_person_name ?? 'Customer'),
         ];
     }
 }

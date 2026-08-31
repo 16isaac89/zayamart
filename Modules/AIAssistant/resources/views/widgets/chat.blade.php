@@ -80,6 +80,12 @@
         .ai-assistant-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 10px 12px; font-size: 13px; }
         .ai-assistant-card strong { display: block; margin-bottom: 2px; }
         .ai-assistant-card .price { color: var(--bs-primary, #2f5d50); font-weight: 600; }
+        .ai-assistant-whatsapp-btn {
+            display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; padding: 7px 14px;
+            background: #25D366; color: #fff; border-radius: 18px; font-size: 12px; font-weight: 600;
+            text-decoration: none; text-align: center;
+        }
+        .ai-assistant-whatsapp-btn:hover { background: #1ebe5a; color: #fff; }
         #ai-assistant-handoff-bar {
             display: flex; align-items: center; justify-content: space-between; gap: 8px;
             padding: 8px 12px; background: #fff8e6; border-top: 1px solid #f0e4bd; font-size: 12px;
@@ -139,9 +145,32 @@
                     const amount = document.createElement('div');
                     amount.textContent = '{{ translate('Total') }}: ' + (data.order_amount ?? '');
                     el.appendChild(amount);
+                    if (data.whatsapp_link) {
+                        el.appendChild(renderWhatsAppButton(data.whatsapp_link, '{{ translate('Send_order_on_WhatsApp') }}'));
+                    }
+                    messages.appendChild(el);
+                    messages.scrollTop = messages.scrollHeight;
+                } else if (type === 'whatsapp_link' && data.whatsapp_link) {
+                    const el = document.createElement('div');
+                    el.className = 'ai-assistant-card';
+                    el.style.maxWidth = '88%';
+                    el.style.marginBottom = '8px';
+                    el.appendChild(renderWhatsAppButton(data.whatsapp_link, '{{ translate('Chat_on_WhatsApp') }}'));
                     messages.appendChild(el);
                     messages.scrollTop = messages.scrollHeight;
                 }
+            }
+
+            // Always a Laravel-built wa.me URL from the tool result, never
+            // AI-authored text — safe to set as a real href.
+            function renderWhatsAppButton(url, label) {
+                const link = document.createElement('a');
+                link.className = 'ai-assistant-whatsapp-btn';
+                link.href = url;
+                link.target = '_blank';
+                link.rel = 'noopener noreferrer';
+                link.textContent = label;
+                return link;
             }
 
             function renderCards(products) {

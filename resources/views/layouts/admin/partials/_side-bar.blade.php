@@ -68,6 +68,30 @@
                     </ul>
                 </li>
             @endif
+            @if(Helpers::module_permission_check('real_estate_management'))
+                <li class="{{ Request::is('admin/real-estate*') ? 'sub-menu-opened' : ''}}">
+                    <a class="nav-link nav-link-toggle {{ Request::is('admin/real-estate*') ? 'active' : ''}}"
+                       href="javascript:" title="{{ translate('Real_Estate') }}">
+                        <i class="fi fi-sr-home"></i>
+                        <span class="aside-mini-hidden-element flex-grow-1 d-flex justify-content-between align-items-center">
+                            <span class="text-truncate max-w-180">{{ translate('Real_Estate') }}</span>
+                            <i class="fi fi-sr-angle-down"></i>
+                        </span>
+                    </a>
+                    <ul class="aside-submenu navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link {{ Request::is('admin/real-estate/listings*') ? 'active' : '' }}"
+                               href="{{ route('admin.real-estate.listings.index') }}" title="{{ translate('Listings') }}">
+                                <span class="flex-grow-1 text-truncate">{{ translate('Listings') }}</span>
+                                @php($pendingListingCount = \Modules\RealEstate\app\Models\RealEstateListing::where('status', 'pending')->count())
+                                @if($pendingListingCount > 0)
+                                    <span class="badge fw-bold badge-danger badge-sm text-bg-danger">{{ $pendingListingCount }}</span>
+                                @endif
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            @endif
             @if(Helpers::module_permission_check('order_management'))
                 <li class="nav-item nav-item_title {{ Request::is('admin/orders*')?((Request::is('admin/orders/details/*') && request()->has('vendor-order-list')) ? '' : 'scroll-here'):''}}">
                     <small class="nav-subtitle" title="">{{ translate('order_management') }}</small>
