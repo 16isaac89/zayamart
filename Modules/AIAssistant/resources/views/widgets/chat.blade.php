@@ -297,7 +297,7 @@
                         'Accept': 'application/json',
                         'X-CSRF-TOKEN': csrfToken,
                     },
-                    body: JSON.stringify({ message: text }),
+                    body: JSON.stringify({ message: text, conversation_id: conversationId }),
                 })
                     .then(function (response) {
                         if (!response.ok) {

@@ -208,4 +208,7 @@ return [
 	"No_Image" => "No Image",
 	"New_real_estate_inquiry" => "New real estate inquiry",
 	"Log_in_to_your_vendor_panel_to_view_and_respond_to_this_inquiry" => "Log in to your vendor panel to view and respond to this inquiry",
+	"Waiting_for_a_team_member" => "Waiting for a team member",
+	"Continue_with_AI_instead" => "Continue with AI instead",
+	"You_are_now_chatting_with_the_AI_assistant_again" => "You are now chatting with the AI assistant again",
 ];
