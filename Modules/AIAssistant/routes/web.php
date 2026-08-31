@@ -19,4 +19,5 @@ Route::group(['prefix' => 'ai-assistant', 'as' => 'ai-assistant.', 'middleware' 
     Route::post('{shop_slug}/chat', [ConversationController::class, 'send'])->name('chat');
     Route::get('{shop_slug}/chat/{conversationId}/messages', [ConversationController::class, 'messages'])->name('messages');
     Route::post('{shop_slug}/chat/{conversationId}/request-human', [ConversationController::class, 'requestHuman'])->name('request-human');
+    Route::post('{shop_slug}/chat/{conversationId}/resume-ai', [ConversationController::class, 'resumeAi'])->name('resume-ai');
 });

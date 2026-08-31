@@ -9,7 +9,8 @@
     <div id="ai-assistant-widget"
          data-chat-url="{{ route('ai-assistant.chat', ['shop_slug' => $shopSlug]) }}"
          data-messages-url-template="{{ route('ai-assistant.messages', ['shop_slug' => $shopSlug, 'conversationId' => '__ID__']) }}"
-         data-request-human-url-template="{{ route('ai-assistant.request-human', ['shop_slug' => $shopSlug, 'conversationId' => '__ID__']) }}">
+         data-request-human-url-template="{{ route('ai-assistant.request-human', ['shop_slug' => $shopSlug, 'conversationId' => '__ID__']) }}"
+         data-resume-ai-url-template="{{ route('ai-assistant.resume-ai', ['shop_slug' => $shopSlug, 'conversationId' => '__ID__']) }}">
         <button type="button" id="ai-assistant-toggle" aria-label="{{ translate('Chat_with_us') }}">
             @if($__aiAgent->bot_avatar)
                 <img src="{{ getStorageImages(path: $__aiAgent->bot_avatar_full_url, type: 'backend-profile') }}" alt="">
@@ -36,6 +37,10 @@
             <div id="ai-assistant-handoff-bar" class="d-none">
                 {{ translate('Want_to_talk_to_a_person_instead') }}
                 <button type="button" id="ai-assistant-request-human">{{ translate('Talk_to_a_human') }}</button>
+            </div>
+            <div id="ai-assistant-waiting-bar" class="d-none">
+                {{ translate('Waiting_for_a_team_member') }}
+                <button type="button" id="ai-assistant-resume-ai">{{ translate('Continue_with_AI_instead') }}</button>
             </div>
             <form id="ai-assistant-form" autocomplete="off">
                 <input type="text" id="ai-assistant-input" maxlength="2000"
@@ -86,11 +91,11 @@
             text-decoration: none; text-align: center;
         }
         .ai-assistant-whatsapp-btn:hover { background: #1ebe5a; color: #fff; }
-        #ai-assistant-handoff-bar {
+        #ai-assistant-handoff-bar, #ai-assistant-waiting-bar {
             display: flex; align-items: center; justify-content: space-between; gap: 8px;
             padding: 8px 12px; background: #fff8e6; border-top: 1px solid #f0e4bd; font-size: 12px;
         }
-        #ai-assistant-handoff-bar button {
+        #ai-assistant-handoff-bar button, #ai-assistant-waiting-bar button {
             border: 1px solid var(--bs-primary, #2f5d50); background: #fff; color: var(--bs-primary, #2f5d50);
             border-radius: 14px; padding: 4px 10px; font-size: 12px; cursor: pointer; white-space: nowrap;
         }
@@ -112,6 +117,8 @@
             const sendBtn = document.getElementById('ai-assistant-send');
             const handoffBar = document.getElementById('ai-assistant-handoff-bar');
             const requestHumanBtn = document.getElementById('ai-assistant-request-human');
+            const waitingBar = document.getElementById('ai-assistant-waiting-bar');
+            const resumeAiBtn = document.getElementById('ai-assistant-resume-ai');
             const chatUrl = widget.dataset.chatUrl;
             const csrfToken = document.querySelector('meta[name="_token"]')?.content;
             let conversationId = null;
@@ -197,9 +204,19 @@
             function updateHandoffUi(supportStatus) {
                 if (supportStatus === 'human_active' || supportStatus === 'human_requested') {
                     handoffBar.classList.add('d-none'); // already requested/active — no need to ask again
+                    waitingBar.classList.remove('d-none');
                     startPolling();
                 } else {
                     handoffBar.classList.remove('d-none');
+                    waitingBar.classList.add('d-none');
+                    stopPolling();
+                }
+            }
+
+            function stopPolling() {
+                if (pollTimer) {
+                    clearInterval(pollTimer);
+                    pollTimer = null;
                 }
             }
 
@@ -243,6 +260,18 @@
                 }).then(r => r.json()).then(function (data) {
                     updateHandoffUi(data.support_status);
                     appendMessage('{{ translate('A_team_member_will_join_this_conversation_shortly') }}', 'bot');
+                });
+            });
+
+            resumeAiBtn.addEventListener('click', function () {
+                if (!conversationId) return;
+                fetch(widget.dataset.resumeAiUrlTemplate.replace('__ID__', conversationId), {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: {'X-CSRF-TOKEN': csrfToken},
+                }).then(r => r.json()).then(function (data) {
+                    updateHandoffUi(data.support_status);
+                    appendMessage('{{ translate('You_are_now_chatting_with_the_AI_assistant_again') }}', 'bot');
                 });
             });
 

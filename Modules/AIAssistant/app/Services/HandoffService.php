@@ -103,4 +103,32 @@ class HandoffService
             description: "Seller #{$sellerId} returned conversation #{$conversation->id} to AI.",
         );
     }
+
+    /**
+     * The customer's own escape hatch out of a handoff they asked for (or
+     * that a phrase match triggered for them) — a human hasn't necessarily
+     * responded yet, and there is otherwise no way back to the AI short of
+     * a vendor manually returning the conversation from their inbox. Valid
+     * from either human_requested or human_active; a no-op once resolved/
+     * closed.
+     */
+    public function resumeAiForCustomer(AIConversation $conversation): void
+    {
+        if (!in_array($conversation->support_status, [AIConversation::SUPPORT_HUMAN_REQUESTED, AIConversation::SUPPORT_HUMAN_ACTIVE], true)) {
+            return;
+        }
+
+        $conversation->update([
+            'support_status' => AIConversation::SUPPORT_ACTIVE,
+            'human_returned_at' => now(),
+        ]);
+
+        $this->auditLogger->log(
+            actorType: 'customer',
+            actorId: $conversation->customer_id,
+            sellerId: $conversation->seller_id,
+            eventType: 'conversation_returned_to_ai',
+            description: "Customer resumed AI chat on conversation #{$conversation->id} instead of waiting for a human.",
+        );
+    }
 }

@@ -95,6 +95,22 @@ class ConversationController extends Controller
     }
 
     /**
+     * The customer's own way back to the AI after a handoff — see
+     * HandoffService::resumeAiForCustomer()'s docblock.
+     */
+    public function resumeAi(Request $request, string $shopSlug, int $conversationId): JsonResponse
+    {
+        [$agent, $conversation, $error] = $this->resolve($request, $shopSlug, $conversationId);
+        if ($error) {
+            return $error;
+        }
+
+        $this->handoffService->resumeAiForCustomer($conversation);
+
+        return response()->json(['support_status' => $conversation->fresh()->support_status]);
+    }
+
+    /**
      * @return array{0: ?AIAgent, 1: ?AIConversation, 2: ?JsonResponse}
      */
     private function resolve(Request $request, string $shopSlug, ?int $conversationId = null): array

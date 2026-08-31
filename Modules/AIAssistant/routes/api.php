@@ -20,4 +20,5 @@ Route::prefix('ai-assistant')->name('ai-assistant.api.')->middleware('apiGuestCh
     Route::post('{shop_slug}/chat', [ConversationController::class, 'send'])->name('chat');
     Route::get('{shop_slug}/chat/{conversationId}/messages', [ConversationController::class, 'messages'])->name('messages');
     Route::post('{shop_slug}/chat/{conversationId}/request-human', [ConversationController::class, 'requestHuman'])->name('request-human');
+    Route::post('{shop_slug}/chat/{conversationId}/resume-ai', [ConversationController::class, 'resumeAi'])->name('resume-ai');
 });
